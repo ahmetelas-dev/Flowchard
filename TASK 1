@@ -1,0 +1,54 @@
+flowchart TD
+    Start([START]) --> Init[Set attempts to zero and mark user as not verified]
+    Init --> InsertCard[/Display: Please insert your card/]
+    InsertCard --> AuthLoop{Have there been fewer than 3 attempts AND is the user still unverified?}
+    
+    AuthLoop -->|YES| ReadPIN[/Ask user to enter PIN/]
+    AuthLoop -->|NO| AuthCheck{Is the user still unverified?}
+    
+    ReadPIN --> PinCheck{Is the PIN correct?}
+    PinCheck -->|YES| SetAuth[Mark the user as successfully verified]
+    PinCheck -->|NO| IncAttempts[Add 1 to the failed attempts counter]
+    IncAttempts --> PrintWrong[/Display: Incorrect PIN/]
+    
+    SetAuth --> AuthLoop
+    PrintWrong --> AuthLoop
+    
+    AuthCheck -->|YES| BlockCard[/Display: Card Blocked. Please contact your bank/]
+    BlockCard --> EndSession[/Display: Please take your card. Have a good day/]
+    
+    AuthCheck -->|NO| InitTrans[Prepare to start the transaction session]
+    InitTrans --> TransLoop{Does the user want to continue with transactions?}
+    
+    TransLoop -->|NO| EndSession
+    TransLoop -->|YES| ReadBal[/Retrieve the current account balance/]
+    
+    ReadBal --> PrintBal[/Show the user their current balance/]
+    PrintBal --> ReadAmount[/Ask the user for the withdrawal amount/]
+    
+    ReadAmount --> CheckBal{Is the requested amount greater than the balance?}
+    
+    CheckBal -->|YES| PrintNoFunds[/Display: Insufficient balance/]
+    CheckBal -->|NO| CheckMod{Is the amount NOT a multiple of 20TL?}
+    
+    CheckMod -->|YES| PrintModErr[/Display: Error - Amount must be in units of 20TL/]
+    CheckMod -->|NO| CheckLimit{Does the amount exceed the daily limit?}
+    
+    CheckLimit -->|YES| PrintLimitErr[/Display: Error - Daily withdrawal limit reached/]
+    CheckLimit -->|NO| DispenseCash[Update the account balance and the daily limit]
+    DispenseCash --> PrintReceipt[/Dispense the cash and print the receipt/]
+    
+    PrintNoFunds --> AskContinue[/Display: Would you like to perform another transaction?/]
+    PrintModErr --> AskContinue
+    PrintLimitErr --> AskContinue
+    PrintReceipt --> AskContinue
+    
+    AskContinue --> ReadChoice[/Get the user's choice: YES or NO/]
+    ReadChoice --> CheckChoice{Did the user choose NO?}
+    
+    CheckChoice -->|YES| SetContFalse[End the transaction session]
+    CheckChoice -->|NO| TransLoop
+    
+    SetContFalse --> TransLoop
+    
+    EndSession --> End([END])
