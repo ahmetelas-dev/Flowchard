@@ -1,1 +1,54 @@
+START
+    attempts = 0
+    is_authenticated = FALSE
+    daily_limit = 5000 // Assuming a standard daily limit
 
+    PRINT "Please insert your card."
+
+    LOOP WHILE attempts < 3 AND is_authenticated == FALSE
+        READ PIN
+        IF PIN is correct THEN
+            is_authenticated = TRUE
+        ELSE
+            attempts = attempts + 1
+            PRINT "Incorrect PIN."
+        END IF
+    END LOOP
+
+    IF is_authenticated == FALSE THEN
+        PRINT "Card Blocked. Please contact your bank."
+        GOTO END_SESSION
+    END IF
+
+    continue_transaction = TRUE
+    
+    LOOP WHILE continue_transaction == TRUE
+        READ account_balance
+        PRINT "Your current balance is: " + account_balance
+        
+        READ withdrawal_amount
+        
+        IF withdrawal_amount > account_balance THEN
+            PRINT "Insufficient balance."
+        ELSE IF withdrawal_amount MOD 20 != 0 THEN
+            PRINT "Error: Amount must be a multiple of 20TL."
+        ELSE IF withdrawal_amount > daily_limit THEN
+            PRINT "Error: Exceeds daily withdrawal limit."
+        ELSE
+            account_balance = account_balance - withdrawal_amount
+            daily_limit = daily_limit - withdrawal_amount
+            PRINT "Dispensing cash..."
+            PRINT "Printing receipt..."
+        END IF
+        
+        PRINT "Would you like to perform another transaction? (YES/NO)"
+        READ user_choice
+        
+        IF user_choice == "NO" THEN
+            continue_transaction = FALSE
+        END IF
+    END LOOP
+
+    END_SESSION:
+    PRINT "Please take your card. Have a good day."
+END
