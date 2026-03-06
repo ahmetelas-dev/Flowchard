@@ -1,1 +1,81 @@
+START
+    // Step 1: User Authentication
+    PRINT "Welcome to the Online Store." [cite: 271]
+    READ username, password
+    IF login credentials are invalid THEN [cite: 275]
+        PRINT "Access Denied."
+        GOTO END
+    END IF
 
+    shopping_active = TRUE
+    cart_items = []
+    total_price = 0
+
+    // Step 2: Browsing and Adding Products
+    LOOP WHILE shopping_active == TRUE [cite: 276]
+        PRINT "Browsing categories: Electronics, Clothing, Home..."
+        READ selected_product
+        
+        READ stock_status [cite: 278]
+        IF stock_status == "In Stock" THEN
+            PRINT "Adding product to cart." [cite: 277]
+            ADD selected_product TO cart_items
+            UPDATE total_price
+        ELSE
+            PRINT "Sorry, item is out of stock."
+        END IF
+
+        PRINT "Do you want to continue browsing? (YES/NO)"
+        READ browse_choice
+        IF browse_choice == "NO" THEN
+            shopping_active = FALSE
+        END IF
+    END LOOP
+
+    // Step 3: Cart Management
+    view_cart = TRUE
+    LOOP WHILE view_cart == TRUE [cite: 279]
+        PRINT "Your Cart: " + cart_items
+        PRINT "Current Total: " + total_price
+        PRINT "Would you like to remove any items? (YES/NO)"
+        READ remove_choice
+        IF remove_choice == "YES" THEN
+            READ item_to_remove
+            REMOVE item_to_remove FROM cart_items
+            UPDATE total_price
+        ELSE
+            view_cart = FALSE
+        END IF
+    END LOOP
+
+    // Step 4: Checkout and Calculations
+    PRINT "Proceeding to checkout."
+    
+    PRINT "Enter discount code (if any):" [cite: 280]
+    READ discount_code
+    IF discount_code is valid THEN
+        APPLY discount to total_price
+    END IF
+
+    IF total_price < 10 THEN [cite: 281]
+        PRINT "Minimum order amount is $10. Please add more items."
+        GOTO START // Return to browsing
+    END IF
+
+    IF total_price < 40 THEN [cite: 282]
+        total_price = total_price + shipping_fee
+        PRINT "Shipping fee added."
+    ELSE
+        PRINT "Free shipping applied!"
+    END IF
+
+    // Step 5: Payment and Confirmation
+    PRINT "Select Payment Method: 1-Credit Card, 2-PayPal" [cite: 283]
+    READ payment_method
+    PRINT "Processing payment..."
+    
+    PRINT "Order confirmed! Thank you for shopping." [cite: 284]
+
+    END:
+    PRINT "Session ended."
+END
