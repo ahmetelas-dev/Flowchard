@@ -1,1 +1,43 @@
+START
+    // Initial State
+    system_active = TRUE [cite: 384]
+    
+    // Main Monitoring Loop (Continuous) [cite: 385, 400, 401, 403]
+    LOOP WHILE system_active == TRUE
+        PRINT "System Status: Monitoring all sensors..." [cite: 385]
+        
+        // Sensor Reading [cite: 386, 387, 404]
+        READ motion_sensor, door_window_sensor
+        
+        // Threat Detection [cite: 386, 387, 401]
+        IF motion_sensor == DETECTED OR door_window_sensor == OPEN THEN
+            PRINT "Potential threat detected! Activating cameras..." [cite: 388]
+            
+            // Check for False Alarm [cite: 389]
+            READ homeowner_presence
+            IF homeowner_presence == TRUE THEN
+                PRINT "Homeowner recognized. False alarm cleared." [cite: 389]
+            ELSE
+                // Determine Alarm Level (1-Low, 2-Medium, 3-High) [cite: 390, 405]
+                READ threat_level
+                PRINT "Alarm Level: " + threat_level [cite: 390]
+                
+                // Emergency Actions [cite: 391, 401]
+                PRINT "Sending Emergency Notifications (SMS + App + Email)" [cite: 391]
+                TRIGGER_ALARM_SIREN
+            END IF
+        END IF
 
+        // Check for System Reset [cite: 393, 406]
+        PRINT "Checking for manual reset command..."
+        READ reset_command
+        IF reset_command == TRUE THEN
+            DEACTIVATE_ALARM [cite: 393]
+            PRINT "System reset and secured."
+        END IF
+        
+        // Wait and re-check to continue loop [cite: 392, 408]
+        WAIT 5 SECONDS
+        PRINT "Continuing monitoring..." [cite: 408]
+    END LOOP
+END
