@@ -1,1 +1,56 @@
-
+START
+    READ patient_id
+    VERIFY patient_id
+    
+    main_menu = TRUE
+    LOOP WHILE main_menu == TRUE
+        PRINT "1- Make Appointment, 2- View Test Results, 3- Exit"
+        READ user_action
+        
+        IF user_action == 1 THEN
+            // Module 1: Appointment
+            LOOP
+                PRINT "Select Clinic (e.g., Cardiology, ENT)"
+                READ clinic
+                PRINT "Available Doctors and Time Slots..."
+                READ selected_slot
+                PRINT "Confirm Appointment? (YES/NO)"
+                READ confirm
+                IF confirm == "YES" THEN
+                    PRINT "Appointment Set! Sending SMS notification..."
+                    BREAK LOOP
+                END IF
+            END LOOP
+            
+        ELSE IF user_action == 2 THEN
+            // Module 2: Test Results
+            IF tests_exist == FALSE THEN
+                PRINT "No records found for this ID."
+            ELSE
+                IF results_ready == FALSE THEN
+                    PRINT "Your results are still being processed. Please wait."
+                ELSE
+                    PRINT "Displaying laboratory results..."
+                    PRINT "Would you like to download as PDF? (YES/NO)"
+                    READ download
+                    IF download == "YES" THEN
+                        PRINT "Downloading PDF..."
+                    END IF
+                END IF
+            END IF
+            
+        ELSE IF user_action == 3 THEN
+            main_menu = FALSE
+        END IF
+        
+        IF user_action != 3 THEN
+            PRINT "Would you like to perform another action? (YES/NO)"
+            READ another_action
+            IF another_action == "NO" THEN
+                main_menu = FALSE
+            END IF
+        END IF
+    END LOOP
+    
+    PRINT "Thank you for using our hospital system."
+END
