@@ -1,1 +1,62 @@
+START
+    // Login Phase [cite: 351]
+    READ student_id, password
+    VERIFY student_login
+    IF login_failed THEN
+        PRINT "Invalid credentials."
+        GOTO END
+    END IF
 
+    registration_active = TRUE
+    total_credits = 0
+    selected_courses = []
+
+    LOOP WHILE registration_active == TRUE
+        PRINT "1- View Course List, 2- Drop Course, 3- Confirm & Exit"
+        READ menu_choice
+
+        IF menu_choice == 1 THEN
+            PRINT "Enter Course Code to Add:"
+            READ course_code
+            
+            // Validation Checks [cite: 354, 355, 356, 357]
+            IF course_quota_full == TRUE THEN
+                PRINT "Error: Course capacity reached."
+            ELSE IF prerequisite_met == FALSE THEN
+                PRINT "Error: Prerequisite course not completed."
+            ELSE IF schedule_conflict == TRUE THEN
+                PRINT "Error: Schedule conflict detected."
+            ELSE IF (total_credits + course_credits) > 35 THEN
+                PRINT "Error: Credit limit exceeded (Max 35)."
+            ELSE
+                ADD course_code TO selected_courses
+                total_credits = total_credits + course_credits
+                PRINT "Course added successfully."
+            END IF
+
+        ELSE IF menu_choice == 2 THEN
+            PRINT "Current Courses: " + selected_courses
+            READ course_to_drop
+            REMOVE course_to_drop FROM selected_courses
+            total_credits = total_credits - course_credits
+
+        ELSE IF menu_choice == 3 THEN
+            // Advisor Approval [cite: 359]
+            IF GPA < 2.5 THEN
+                PRINT "GPA < 2.5: Advisor approval is required."
+                SEND_REQUEST to Advisor
+            END IF
+            
+            PRINT "Registration Summary: " + selected_courses
+            PRINT "Total Credits: " + total_credits
+            PRINT "Confirm Final Registration? (YES/NO)"
+            READ final_confirm
+            IF final_confirm == "YES" THEN
+                registration_active = FALSE
+            END IF
+        END IF
+    END LOOP
+
+    END:
+    PRINT "Closing registration system."
+END
