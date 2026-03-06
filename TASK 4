@@ -1,1 +1,49 @@
-
+flowchart LR
+    Start([START]) --> Login[/Login/]
+    Login --> Auth{Valid?}
+    
+    Auth -->|NO| Invalid[/Access Denied/]
+    Invalid --> EndSession([END])
+    
+    Auth -->|YES| Menu{Main Menu}
+    
+    %% Adding a Course Path
+    Menu -->|1-Add| GetCode[/Enter Course Code/]
+    GetCode --> Quota{Quota Full?}
+    
+    Quota -->|YES| ErrQuota[/Quota Error/]
+    Quota -->|NO| Prereq{Prereqs Met?}
+    
+    Prereq -->|NO| ErrPre[/Prereq Error/]
+    Prereq -->|YES| Conflict{Conflict?}
+    
+    Conflict -->|YES| ErrConf[/Schedule Error/]
+    Conflict -->|NO| CreditLimit{Over 35 Credits?}
+    
+    CreditLimit -->|YES| ErrLimit[/Credit Error/]
+    CreditLimit -->|NO| Add[Add Course & Update Credits]
+    
+    %% Return Loops
+    ErrQuota --> Menu
+    ErrPre --> Menu
+    ErrConf --> Menu
+    ErrLimit --> Menu
+    Add --> Menu
+    
+    %% Drop Path
+    Menu -->|2-Drop| ShowSelected[/Select Course/]
+    ShowSelected --> Remove[Remove Course]
+    Remove --> Menu
+    
+    %% Exit Path
+    Menu -->|3-Exit| GPA_Check{GPA < 2.5?}
+    
+    GPA_Check -->|YES| Advisor[Advisor Approval Required]
+    GPA_Check -->|NO| Summary[/Show Summary/]
+    
+    Advisor --> Summary
+    Summary --> FinalConfirm{Confirm?}
+    
+    FinalConfirm -->|NO| Menu
+    FinalConfirm -->|YES| Success[/Registration Confirmed!/]
+    Success --> EndSession
