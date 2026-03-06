@@ -1,1 +1,33 @@
 
+flowchart TD
+    Start([START]) --> Init[Set system to ACTIVE status]
+    Init --> Monitor[/Display: System is monitoring sensors/]
+    
+    %% Monitoring Loop [cite: 385, 401, 403]
+    Monitor --> ReadSensors[Read Motion and Door/Window sensors]
+    ReadSensors --> Detect{Is motion detected or a door open?}
+    
+    %% No Threat Path
+    Detect -->|NO| ResetCheck
+    
+    %% Threat Detected Path [cite: 386, 387, 388]
+    Detect -->|YES| ActivateCam[Activate security cameras and record]
+    ActivateCam --> Homeowner{Is the homeowner present?}
+    
+    %% False Alarm Path [cite: 389]
+    Homeowner -->|YES| FalseAlarm[/Display: False alarm. Homeowner recognized./]
+    FalseAlarm --> ResetCheck
+    
+    %% True Threat Path [cite: 390, 391]
+    Homeowner -->|NO| ThreatLevel{Determine threat level: 1, 2, or 3}
+    ThreatLevel --> Notify[Send SMS, App, and Email notifications]
+    Notify --> Siren[Trigger local alarm siren]
+    Siren --> ResetCheck
+    
+    %% Reset and Loop [cite: 393, 408]
+    ResetCheck{Has a reset command been received?}
+    ResetCheck -->|YES| Deactivate[Stop siren and clear alarms]
+    ResetCheck -->|NO| LoopWait[Wait for 5 seconds]
+    
+    Deactivate --> LoopWait
+    LoopWait -->|Continue Monitoring| Monitor
