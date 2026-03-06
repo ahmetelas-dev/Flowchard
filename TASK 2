@@ -1,0 +1,50 @@
+flowchart TD
+    Start([START]) --> Login[/User enters username and password/]
+    Login --> AuthCheck{Are the credentials valid?}
+    
+    AuthCheck -->|NO| Denied[/Display: Access Denied/]
+    Denied --> EndSession([END])
+    
+    AuthCheck -->|YES| Browse[Initialize empty cart and set total to zero]
+    Browse --> LoopBrowse[/Show product categories: Electronics, Clothing, etc./]
+    
+    LoopBrowse --> Select[/User selects a product/]
+    Select --> StockCheck{Is the item currently in stock?}
+    
+    StockCheck -->|NO| OutStock[/Display: Sorry, item is out of stock/]
+    StockCheck -->|YES| AddCart[Add the selected product to the cart and update the total price]
+    
+    OutStock --> ContBrowse{Does the user want to keep browsing?}
+    AddCart --> ContBrowse
+    
+    ContBrowse -->|YES| LoopBrowse
+    ContBrowse -->|NO| ViewCart[/Display the current items in the cart and the total price/]
+    
+    ViewCart --> RemoveCheck{Does the user want to remove any items?}
+    
+    RemoveCheck -->|YES| RemoveItem[Remove chosen item from cart and recalculate the total price]
+    RemoveItem --> ViewCart
+    
+    RemoveCheck -->|NO| Checkout[/Proceed to the checkout screen/]
+    
+    Checkout --> Discount[/Ask user for a discount code/]
+    Discount --> DiscCheck{Is the discount code valid?}
+    
+    DiscCheck -->|YES| ApplyDisc[Apply the discount percentage to the total price]
+    DiscCheck -->|NO| MinCheck{Is the total price at least $10?}
+    ApplyDisc --> MinCheck
+    
+    MinCheck -->|NO| TooLow[/Display: Minimum order is $10/]
+    TooLow --> LoopBrowse
+    
+    MinCheck -->|YES| ShipCheck{Is the total price $40 or more?}
+    
+    ShipCheck -->|NO| AddShip[Add the standard shipping fee to the total]
+    ShipCheck -->|YES| FreeShip[/Display: Free shipping applied!/]
+    
+    AddShip --> Payment[/User selects payment method: Credit Card or PayPal/]
+    FreeShip --> Payment
+    
+    Payment --> Process[Process the payment through the secure gateway]
+    Process --> Confirm[/Display: Order confirmed! Thank you for shopping/]
+    Confirm --> EndSession
