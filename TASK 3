@@ -1,0 +1,38 @@
+flowchart TD
+    Start([START]) --> GetID[/User enters Patient ID number/]
+    GetID --> Verify[Verify the identity in the hospital database]
+    Verify --> MainMenu{Main Menu: Select an action}
+    
+    %% Module 1: Appointment
+    MainMenu -->|1: Make Appointment| SelectClinic[/User selects a clinic and a doctor/]
+    SelectClinic --> SelectSlot[/User chooses an available time slot/]
+    SelectSlot --> ConfirmApp{Does the user confirm the appointment?}
+    
+    ConfirmApp -->|NO| SelectClinic
+    ConfirmApp -->|YES| SMS[Set appointment and send confirmation SMS]
+    SMS --> AnotherAction
+    
+    %% Module 2: Test Results
+    MainMenu -->|2: View Test Results| CheckTests{Do any laboratory tests exist for this ID?}
+    
+    CheckTests -->|NO| NoTests[/Display: No records found/]
+    CheckTests -->|YES| CheckReady{Are the test results ready?}
+    
+    CheckReady -->|NO| Waiting[/Display: Results are still being processed/]
+    CheckReady -->|YES| ShowResults[/Display the laboratory test results/]
+    
+    NoTests --> AnotherAction
+    Waiting --> AnotherAction
+    ShowResults --> Download{Would the user like to download the PDF?}
+    
+    Download -->|YES| PDF[Generate and download the PDF file]
+    Download -->|NO| AnotherAction
+    PDF --> AnotherAction
+    
+    %% Loop Back Logic
+    AnotherAction{Would you like to perform another action?}
+    AnotherAction -->|YES| MainMenu
+    AnotherAction -->|NO| EndSession
+    
+    MainMenu -->|3: Exit| EndSession[/Display: Thank you. Stay healthy!/]
+    EndSession --> End([END])
